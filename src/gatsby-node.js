@@ -1,5 +1,8 @@
 import { createRemoteFileNode } from "gatsby-source-filesystem";
-import traverse from 'traverse'
+import traverse from 'traverse';
+
+const defaultModels = ['Page'];
+
 export const createResolvers = (
   {
     actions: { createNode },
@@ -11,7 +14,7 @@ export const createResolvers = (
   },
   options
 ) => {
-  const resolvers = options.models.reduce(
+  const resolvers = (options.models || defaultModels).reduce(
     (acc, model) => ({
       ...acc,
       [`builder_${model}`]: {
