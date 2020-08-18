@@ -39,7 +39,7 @@ Useful for reduced data usage in development or projects where you want the asse
 ```GraphQL
   query($path: String!) {
     allBuilderModels {
-      landingPage(
+      page(
         target: { urlPath: $path }
         limit: 1
         options: { cachebust: true }

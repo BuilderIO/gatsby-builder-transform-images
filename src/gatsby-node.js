@@ -9,6 +9,7 @@ export const createResolvers = (
     cache,
     createNodeId,
     createResolvers,
+    pathPrefix,
     store,
     reporter,
   },
@@ -22,12 +23,12 @@ export const createResolvers = (
           type: '[File]',
           resolve: source => {
             const promises = []
-            traverse(source.content.data).forEach(field => {
+            traverse(source.content.data).forEach(function (field) {
               if (
                 typeof field === 'string' &&
                 field.startsWith('https://cdn.builder.io/api/v1/image')
               ) {
-                // todo: read width height fit format from field and add them to node, or strip query param and load the full file
+
                 promises.push(
                   createRemoteFileNode({
                     url: field,
@@ -36,6 +37,12 @@ export const createResolvers = (
                     createNode,
                     createNodeId,
                     reporter,
+                  }).then((node) => {
+                    if (options.replaceLinksToStatic) {
+                      const imageName = `${node.name}-${node.internal.contentDigest}${node.ext}`
+                      object.update(`${pathPrefix}/static/${imageName}`)
+                    }
+                    return node
                   })
                 )
               }
