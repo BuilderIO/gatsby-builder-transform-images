@@ -1,20 +1,15 @@
-[![CircleCI](https://circleci.com/gh/reactgraphqlacademy/gatsby-source-sanity-transform-images/tree/master.svg?style=svg)](https://circleci.com/gh/reactgraphqlacademy/gatsby-source-sanity-transform-images/tree/master)
-
 ## Description
 
-This plugin extends the Gatsby Sanity GraphQL schema to add a `localFile` field to the `SanityImageAsset` type. The field `localFile` returns a `File` type. This enables downloading remote images to local so you have the flexibility to deploy them to a different CDN (or even process them with `gatsby-plugin-sharp` if you need to). This plugin is inspired by the [localFile field from Contentful](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-contentful#download-assets-for-static-distribution).
+This plugin extends the Gatsby Builder.io GraphQL schema to add a `localFiles` field to any builder model types specified in options. The field `localFiles` returns a `File`  Array type. This enables downloading remote images to local so you have the flexibility to deploy them to a different CDN (or even process them with `gatsby-plugin-sharp` if you need to). This plugin is inspired by the [localFile field from Sanity](https://github.com/leanjs/gatsby-source-sanity-transform-images).
 
-### Demo
-
-This [page](https://reactgraphql.academy/team/will-voelcker/) downloads the profile picture using [localFile](https://github.com/reactgraphqlacademy/reactgraphqlacademy/blob/master/src/templates/team-member.js#L210). The picture is served via Firebase CDN.
 
 ### Dependencies
 
-This plugin depends on [gatsby-source-sanity](https://github.com/sanity-io/gatsby-source-sanity)
+This plugin depends on [@builder.io/gatsby](https://github.com/BuilderIO/builder/tree/master/packages/gatsby)
 
 ## How to install
 
-`npm i gatsby-source-sanity-transform-images --save`
+`npm i @builder.io/gatsby @builder.io/gatsby-image-transoformer --save`
 
 ```js
 // in your gatsby-config.js
@@ -22,7 +17,12 @@ module.exports = {
   // ...
   plugins: [
     // ...
-    "gatsby-source-sanity-transform-images"
+    {
+      resolve: "@builder.io/gatsby-image-transoformer",
+      options: {
+        models: ['Page', 'LandingPage'] // Class case
+      }
+    }
   ]
   // ...
 };
@@ -37,26 +37,26 @@ Useful for reduced data usage in development or projects where you want the asse
 ## Examples of usage
 
 ```GraphQL
-query Example {
-  allSanityImageAsset {
-    nodes {
-    # Direct URL to Sanity CDN for this asset
-      url
-      # Query for locally stored file(eg An image) - `File` node
-      localFile(width: 500) {
-          # Where the asset is copied to for distribution
+  query($path: String!) {
+    allBuilderModels {
+      landingPage(
+        target: { urlPath: $path }
+        limit: 1
+        options: { cachebust: true }
+      ) {
+        content
+        # download all image assets from content and make them available on localFiles Array
+        localFiles {
           publicURL
-          # Use `gatsby-image` to create fluid image resource
           childImageSharp {
-            # max width is already 500 because of localFile(width: 500)
-            fluid {
-              src
+            fluid(maxWidth: 910) {
+              ...GatsbyImageSharpFluid_withWebp_tracedSVG
+            }
           }
         }
       }
     }
   }
-}
 ```
 
 ## How to contribute
