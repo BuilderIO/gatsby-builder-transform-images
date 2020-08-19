@@ -24,7 +24,7 @@ export const createResolvers = (
     ...defaultOptions,
     ...options,
   };
-  const resolvers = options.models.reduce(
+  const resolvers = config.models.reduce(
     (acc, model) => ({
       ...acc,
       [`builder_${model}`]: {
@@ -44,10 +44,10 @@ export const createResolvers = (
                     createNodeId,
                     reporter,
                   }).then((node) => {
-                    if (options.replaceLinksToStatic) {
+                    if (config.replaceLinksToStatic) {
                       const imageName = `${node.name}-${node.internal.contentDigest}${node.ext}`
                       const path = `${pathPrefix}/static/${encodeURI(imageName)}`
-                      if (options.debug) {
+                      if (config.debug) {
                         console.log('updating field: ', field, ' to ', path)
                       }
                       object.update(path);
@@ -57,7 +57,7 @@ export const createResolvers = (
                 )
               }
             })
-            if (options.debug) {
+            if (config.debug) {
               console.log(`downloaded ${promises.length} images from content ${source.content.id} on model ${model}` )
             }
             return Promise.all(promises)
