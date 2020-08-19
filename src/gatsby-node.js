@@ -34,6 +34,7 @@ export const createResolvers = (
             const promises = []
             traverse(source.content.data).forEach(function (field) {
               if (config.shouldDownload(field, this.parent)) {
+                const object = this;
                 promises.push(
                   createRemoteFileNode({
                     url: decodeURI(field),
