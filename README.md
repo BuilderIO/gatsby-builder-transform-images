@@ -9,7 +9,7 @@ This plugin depends on [@builder.io/gatsby](https://github.com/BuilderIO/builder
 
 ## How to install
 
-`npm i @builder.io/gatsby @builder.io/gatsby-image-transoformer --save`
+`npm i @builder.io/gatsby @builder.io/gatsby-transform-images --save`
 
 ```js
 // in your gatsby-config.js
@@ -18,7 +18,7 @@ module.exports = {
   plugins: [
     // ...
     {
-      resolve: "@builder.io/gatsby-image-transoformer",
+      resolve: "@builder.io/gatsby-transform-images",
       options: {
         models: ['Page', 'LandingPage'] , // Class case
         replaceLinksToStatic: true,
