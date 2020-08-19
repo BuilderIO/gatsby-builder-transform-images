@@ -20,7 +20,8 @@ module.exports = {
     {
       resolve: "@builder.io/gatsby-image-transoformer",
       options: {
-        models: ['Page', 'LandingPage'] // Class case
+        models: ['Page', 'LandingPage'] , // Class case
+        replaceLinksToStatic: true,
       }
     }
   ]
@@ -47,7 +48,7 @@ Useful for reduced data usage in development or projects where you want the asse
         content
         # download all image assets from content and make them available on localFiles Array
         localFiles {
-          publicURL
+          publicURL # mandatory field if you pass replaceLinksToStatic: true
           childImageSharp {
             fluid(maxWidth: 910) {
               ...GatsbyImageSharpFluid_withWebp_tracedSVG

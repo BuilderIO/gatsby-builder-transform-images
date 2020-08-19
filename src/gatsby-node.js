@@ -31,7 +31,7 @@ export const createResolvers = (
 
                 promises.push(
                   createRemoteFileNode({
-                    url: field,
+                    url: decodeURI(field),
                     store,
                     cache,
                     createNode,
@@ -40,7 +40,11 @@ export const createResolvers = (
                   }).then((node) => {
                     if (options.replaceLinksToStatic) {
                       const imageName = `${node.name}-${node.internal.contentDigest}${node.ext}`
-                      object.update(`${pathPrefix}/static/${imageName}`)
+                      const path = `${pathPrefix}/static/${encodeURI(imageName)}`
+                      if (options.debug) {
+                        console.log('updating field: ', field, ' to ', path)
+                      }
+                      object.update(path);
                     }
                     return node
                   })
