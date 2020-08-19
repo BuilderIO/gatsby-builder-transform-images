@@ -1,59 +1,70 @@
-import { GraphQLInt, GraphQLString } from "gatsby/graphql";
 import { createRemoteFileNode } from "gatsby-source-filesystem";
-import { ImageFormatType } from "./types";
+import traverse from 'traverse';
 
-export const setFieldsOnGraphQLNodeType = ({ type }) => {
-  if (type.name === `SanityImageAsset`) {
-    return {
-      localFile: {
-        type: `File`,
-        args: {
-          width: {
-            type: GraphQLInt
-          },
-          format: {
-            type: ImageFormatType
-          },
-          height: {
-            type: GraphQLInt
-          },
-          fit: {
-            type: GraphQLString,
-            defaultValue: "crop"
-          }
-        }
-      }
-    };
+const defaultOptions = {
+  models: ['Page'],
+  shouldDownload: (field, _parent) => {
+    return typeof field === 'string' && field.startsWith('https://cdn.builder.io/api/v1/image');
   }
+}
 
-  // by default return empty object
-  return {};
-};
-
-export const createResolvers = ({
-  actions: { createNode },
-  cache,
-  createNodeId,
-  createResolvers,
-  store,
-  reporter
-}) => {
-  const resolvers = {
-    SanityImageAsset: {
-      localFile: {
-        resolve: (source, { width, height, fit, format }) => {
-          const url = `${source.url}?fit=${fit}${format ? `&fm=${format}`: ''}${width ? `&w=${width}` : ''}${height ? `&h=${height}` : ''}`;
-          return createRemoteFileNode({
-            url,
-            store,
-            cache,
-            createNode,
-            createNodeId,
-            reporter
-          });
-        }
-      }
-    }
+export const createResolvers = (
+  {
+    actions: { createNode },
+    cache,
+    createNodeId,
+    createResolvers,
+    pathPrefix,
+    store,
+    reporter,
+  },
+  options
+) => {
+  const config = {
+    ...defaultOptions,
+    ...options,
   };
-  createResolvers(resolvers);
+  const resolvers = options.models.reduce(
+    (acc, model) => ({
+      ...acc,
+      [`builder_${model}`]: {
+        localFiles: {
+          type: '[File]',
+          resolve: source => {
+            const promises = []
+            traverse(source.content.data).forEach(function (field) {
+              if (config.shouldDownload(field, this.parent)) {
+                promises.push(
+                  createRemoteFileNode({
+                    url: decodeURI(field),
+                    store,
+                    cache,
+                    createNode,
+                    createNodeId,
+                    reporter,
+                  }).then((node) => {
+                    if (options.replaceLinksToStatic) {
+                      const imageName = `${node.name}-${node.internal.contentDigest}${node.ext}`
+                      const path = `${pathPrefix}/static/${encodeURI(imageName)}`
+                      if (options.debug) {
+                        console.log('updating field: ', field, ' to ', path)
+                      }
+                      object.update(path);
+                    }
+                    return node
+                  })
+                )
+              }
+            })
+            if (options.debug) {
+              console.log(`downloaded ${promises.length} images from content ${source.content.id} on model ${model}` )
+            }
+            return Promise.all(promises)
+          },
+        },
+      },
+    }),
+    {}
+  )
+  createResolvers(resolvers)
 };
