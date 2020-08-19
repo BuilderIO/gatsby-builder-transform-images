@@ -1,7 +1,12 @@
 import { createRemoteFileNode } from "gatsby-source-filesystem";
 import traverse from 'traverse';
 
-const defaultModels = ['Page'];
+const defaultOptions = {
+  models: ['Page'],
+  shouldDownload: (field, _parent) => {
+    return typeof field === 'string' && field.startsWith('https://cdn.builder.io/api/v1/image');
+  }
+}
 
 export const createResolvers = (
   {
@@ -15,7 +20,11 @@ export const createResolvers = (
   },
   options
 ) => {
-  const resolvers = (options.models || defaultModels).reduce(
+  const config = {
+    ...defaultOptions,
+    ...options,
+  };
+  const resolvers = options.models.reduce(
     (acc, model) => ({
       ...acc,
       [`builder_${model}`]: {
@@ -24,11 +33,7 @@ export const createResolvers = (
           resolve: source => {
             const promises = []
             traverse(source.content.data).forEach(function (field) {
-              if (
-                typeof field === 'string' &&
-                field.startsWith('https://cdn.builder.io/api/v1/image')
-              ) {
-
+              if (config.shouldDownload(field, this.parent)) {
                 promises.push(
                   createRemoteFileNode({
                     url: decodeURI(field),
