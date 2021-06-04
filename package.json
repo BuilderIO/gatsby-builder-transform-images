@@ -1,12 +1,12 @@
 {
-  "name": "@builder.io/gatsby-transform-images",
+  "name": "gatsby-builder-transform-images",
   "description": "A transformer plugin to download all images from builder content to the local filesystem for further processing if they want, it optionally also flip all image cdn links to the new local assets",
   "homepage": "https://github.com/BuilderIO/gatsby-builder-transform-images#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BuilderIO/gatsby-builder-transform-images.git"
+    "url": "https://github.com/chesteralan/gatsby-builder-transform-images.git"
   },
-  "version": "0.0.3",
+  "version": "0.0.5",
   "keywords": [
     "gatsby",
     "gatsby-plugin",
