@@ -5,7 +5,7 @@ import isURL from 'validator/lib/isURL';
 const defaultOptions = {
   models: ['Page'],
   shouldDownload: (field, _parent) => {
-    return typeof field === 'string' && field.startsWith('https://cdn.builder.io/api/v1/image');
+    return typeof field === 'string' && field.startsWith('https://cdn.builder.io/api/v1/image') && isURL(field);
   }
 }
 
@@ -34,7 +34,7 @@ export const createResolvers = (
           resolve: source => {
             const promises = []
             traverse(source.content.data).forEach(function (field) {
-              if (isURL(field) && config.shouldDownload(field, this.parent)) {
+              if (config.shouldDownload(field, this.parent)) {
                 const object = this;
                 promises.push(
                   createRemoteFileNode({
