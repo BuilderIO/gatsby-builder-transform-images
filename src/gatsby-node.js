@@ -1,5 +1,6 @@
 import { createRemoteFileNode } from "gatsby-source-filesystem";
 import traverse from 'traverse';
+import isURL from 'validator/lib/isURL';
 
 const defaultOptions = {
   models: ['Page'],
@@ -33,7 +34,7 @@ export const createResolvers = (
           resolve: source => {
             const promises = []
             traverse(source.content.data).forEach(function (field) {
-              if (config.shouldDownload(field, this.parent)) {
+              if (isURL(field) && config.shouldDownload(field, this.parent)) {
                 const object = this;
                 promises.push(
                   createRemoteFileNode({

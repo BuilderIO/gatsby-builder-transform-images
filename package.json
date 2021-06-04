@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/BuilderIO/gatsby-builder-transform-images.git"
   },
-  "version": "0.0.6",
+  "version": "0.0.7",
   "keywords": [
     "gatsby",
     "gatsby-plugin",
@@ -44,6 +44,8 @@
     }
   },
   "dependencies": {
-    "traverse": "^0.6.6"
+    "traverse": "^0.6.6",
+    "valid-url": "^1.0.9",
+    "validator": "^13.6.0"
   }
 }
