@@ -4,9 +4,9 @@
   "homepage": "https://github.com/BuilderIO/gatsby-builder-transform-images#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chesteralan/gatsby-builder-transform-images.git"
+    "url": "https://github.com/BuilderIO/gatsby-builder-transform-images.git"
   },
-  "version": "0.0.5",
+  "version": "0.0.6",
   "keywords": [
     "gatsby",
     "gatsby-plugin",

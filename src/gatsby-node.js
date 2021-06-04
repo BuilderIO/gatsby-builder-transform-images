@@ -45,8 +45,8 @@ export const createResolvers = (
                     reporter,
                   }).then((node) => {
                     if (config.replaceLinksToStatic) {
-                      const imageName = `${node.name}-${node.internal.contentDigest}${node.ext}`
-                      const path = `${pathPrefix}/static/${encodeURI(imageName)}`
+                      const imageName = `${node.base}`
+                      const path = `${pathPrefix}/static/${node.internal.contentDigest}/${encodeURI(imageName)}`
                       if (config.debug) {
                         console.log('updating field: ', field, ' to ', path)
                       }
