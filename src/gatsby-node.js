@@ -46,12 +46,20 @@ export const createResolvers = (
                     reporter,
                   }).then((node) => {
                     if (config.replaceLinksToStatic) {
-                      const imageName = `${node.base}`
-                      const path = `${pathPrefix}/static/${node.internal.contentDigest}/${encodeURI(imageName)}`
                       if (config.debug) {
-                        console.log('updating field: ', field, ' to ', path)
+                        console.log(node.base, node.extension, node.ext, node.internal.mediaType);
                       }
-                      object.update(path);
+    
+                      if( node.extension !== '' ) {
+                        const imageName = `${node.base}`;
+                        const path = `${pathPrefix}/static/${node.internal.contentDigest}/${encodeURI(imageName)}`;
+    
+                        if (config.debug) {
+                          console.log('updating field: ', field, ' to ', path);
+                        }
+    
+                        object.update(path);
+                      }
                     }
                     return node
                   })
